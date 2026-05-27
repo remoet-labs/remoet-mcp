@@ -31,7 +31,7 @@ Generate a key at [remoet.dev/onboarding](https://remoet.dev/onboarding). The sa
 ### Claude Code
 
 ```bash
-claude mcp add remoet https://api.remoet.dev/mcp --scope user --transport http --header "Authorization: Bearer YOUR_KEY"
+claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp --header "Authorization: Bearer YOUR_KEY"
 ```
 
 Then restart Claude Code (exit and relaunch) so the new server's tools load in a fresh session.
