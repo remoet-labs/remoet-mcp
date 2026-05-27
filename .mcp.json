@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "remoet": {
+      "type": "http",
+      "url": "https://api.remoet.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer ${REMOET_API_KEY}"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.remoet-labs/remoet-mcp",
+  "description": "AI-agent-first job platform. Search tech companies by their real tech stack, star the ones that fit, and pull jobs from your shortlist, all over MCP.",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.remoet.dev/mcp"
+    }
+  ]
+}

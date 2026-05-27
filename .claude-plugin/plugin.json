@@ -1,0 +1,9 @@
+{
+  "name": "remoet",
+  "version": "1.0.0",
+  "description": "Curated job search through your agent. Search tech companies by their real stack, star the ones that fit, and pull jobs from your shortlist.",
+  "author": {
+    "name": "Remoet",
+    "url": "https://remoet.dev"
+  }
+}
