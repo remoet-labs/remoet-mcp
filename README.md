@@ -17,6 +17,10 @@ Free tier is the whole product with caps. Paid tiers unlock real-time job data a
 
 See [`tools.md`](./tools.md) for the full tool catalog.
 
+## Works with
+
+Claude Code, Claude Desktop, Claude Web, Cursor, VS Code, Windsurf, Codex, and any MCP-compatible client. Also installable as an [agentskills.io](https://agentskills.io) skill on OpenClaw (via ClawHub) and Hermes Agent. See [Quick install](#quick-install).
+
 ## Auth
 
 Two transports, same tools:
