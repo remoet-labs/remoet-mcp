@@ -1,0 +1,36 @@
+{
+  "name": "remoet-mcp",
+  "version": "1.0.0",
+  "description": "Local MCP server for Remoet, a job-search platform for AI agents. Exposes tools locally and proxies calls to the hosted server at api.remoet.dev/mcp.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "remoet-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remoet-labs/remoet-mcp.git"
+  },
+  "homepage": "https://remoet.dev"
+}

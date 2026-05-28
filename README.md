@@ -2,7 +2,9 @@
 
 Connect your AI agent to [Remoet](https://remoet.dev), the job platform built for agents. Search tech companies by their real tech stack, star the ones you'd actually work for, pull jobs from that shortlist, and manage your developer profile, all through conversation.
 
-This repo is a thin, public wrapper for Remoet's hosted MCP server. The server runs at `https://api.remoet.dev/mcp`; the backend is closed source. Everything here is metadata and config for MCP clients and registries.
+This repo ships a **local stdio MCP server** (Node + TypeScript) plus the metadata MCP clients and directory registries need. The local server advertises Remoet's full tool catalog (snapshotted from the live server) and forwards calls to the hosted MCP at `https://api.remoet.dev/mcp` with your Bearer key. The hosted server is closed source and remains the source of truth for execution.
+
+Most users connect to the hosted server directly (see [Quick install](#quick-install) below). The local package is for clients that prefer stdio or build/scan systems that require a runnable local server.
 
 - **Homepage:** https://remoet.dev
 - **Docs:** https://docs.remoet.dev
@@ -75,11 +77,32 @@ openclaw skills install remoet
 
 ## First prompt to try
 
-> I'm a Rails, React, and Postgres dev. Find companies that match my stack, star the best fits, and pull jobs from my shortlist.
+> I work in Rails, React, and Postgres. Which companies on Remoet hire for that stack?
 
-## Note on the Dockerfile
+## Run locally (Node + Docker)
 
-The `Dockerfile` in this repo is **for directory-registry build verification only** (Glama and similar systems that introspect a running MCP server to score it). End users do not need to build or run it. The image runs `mcp-remote` to forward stdio MCP traffic to the hosted `https://api.remoet.dev/mcp`, so the introspection call can read the live tool catalog while the actual backend stays closed-source.
+If you prefer a local stdio MCP server (or a build/scan system needs one), the same package is runnable directly.
+
+**With Node:**
+
+```bash
+npm install
+npm run build
+REMOET_API_KEY="<your-key>" node dist/index.js
+```
+
+The server speaks MCP over stdio. Set `REMOET_API_KEY` to a free-tier key from [remoet.dev/onboarding](https://remoet.dev/onboarding). Optionally override the upstream endpoint with `REMOET_MCP_URL` (defaults to `https://api.remoet.dev/mcp`).
+
+**With Docker:**
+
+```bash
+docker build -t remoet-mcp .
+docker run --rm -i -e REMOET_API_KEY="<your-key>" remoet-mcp
+```
+
+The container's entrypoint runs the stdio server. Pipe MCP JSON-RPC frames into the container; tool calls are forwarded to the hosted server with your Bearer key.
+
+The published tool catalog lives in [`data/tools.json`](./data/tools.json) (snapshotted from the live `tools/list`). Refresh it whenever the hosted server's tool surface changes.
 
 ## License
 
