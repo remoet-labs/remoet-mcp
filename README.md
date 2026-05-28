@@ -62,16 +62,18 @@ Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as
 
 Add a custom connector pointing at `https://api.remoet.dev/mcp/oauth` and complete the browser sign-in. No API key to paste.
 
-### As a skill (Hermes, OpenClaw)
+Remoet also ships as an [agentskills.io](https://agentskills.io) skill, with one-command installs on Hermes and OpenClaw.
 
-Remoet also ships as an [agentskills.io](https://agentskills.io) skill:
+### Hermes
 
 ```bash
-# Hermes
 hermes skills tap add remoet-labs/agent-skills
 hermes skills install remoet-labs/agent-skills/skills/remoet
+```
 
-# OpenClaw
+### OpenClaw
+
+```bash
 openclaw skills install remoet
 ```
 
