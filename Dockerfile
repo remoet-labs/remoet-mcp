@@ -1,30 +1,31 @@
-# Thin shim so Glama (and other directory build/scan systems) can build and
-# introspect the Remoet MCP server. The actual server is closed-source and
-# hosted at https://api.remoet.dev/mcp; this image exposes a local stdio MCP
-# server that forwards initialize / tools/list / tools/call to that endpoint
-# using a Bearer API key.
-#
-# End users do NOT need to build or run this image. Connect to the hosted
-# server directly per README.md ("Quick install"). The Dockerfile exists so
-# Glama can spin up a process, call `tools/list` to score the tool catalog
-# (TDQS), and surface a score badge for the listing.
+# Multi-stage build for the local Remoet MCP server.
+# Stage 1: install deps + compile TypeScript.
+# Stage 2: minimal runtime image with only production deps + dist.
+
+FROM node:20-slim AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --include=dev
+COPY tsconfig.json ./
+COPY src/ src/
+COPY data/ data/
+RUN npm run build
+RUN npm prune --omit=dev
 
 FROM node:20-slim
+WORKDIR /home/node/app
+RUN chown node:node /home/node/app
+USER node
 
-WORKDIR /app
+# REMOET_API_KEY is read at runtime from process env (`docker run -e ...` or
+# Glama's server-listing config). Not declared as ENV here to avoid the
+# `SecretsUsedInArgOrEnv` Docker linter warning, and because a declared
+# default would leak into image inspection. Users running the package
+# locally set it to their free-tier key from https://remoet.dev/onboarding.
 
-# Glama injects the API key via the server-listing config so the
-# introspection call can authenticate against /mcp. A free-tier key is
-# available at https://remoet.dev/onboarding.
-ENV REMOET_API_KEY=""
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
+COPY --chown=node:node --from=build /app/dist/ dist/
+COPY --chown=node:node --from=build /app/data/ data/
+COPY --chown=node:node package.json ./
 
-# Pre-install mcp-remote into the image so container start does not pay the
-# npx fetch / cache cost on every run, and the build is reproducible.
-# Pinned floor at ^0.1.16 to exclude CVE-2025-6514 (RCE in 0.0.5..0.1.15).
-RUN npm install -g mcp-remote@^0.1.16
-
-# `--transport http-only` matches our Streamable HTTP endpoint exactly and
-# skips the default HTTP-then-SSE probe (one fewer code path).
-# Shell form so ${REMOET_API_KEY} interpolates; exec so mcp-remote becomes
-# PID 1 and signal handling works for clean container shutdown.
-ENTRYPOINT ["sh", "-c", "exec mcp-remote https://api.remoet.dev/mcp --transport http-only --header \"Authorization: Bearer ${REMOET_API_KEY}\""]
+ENTRYPOINT ["node", "dist/index.js"]

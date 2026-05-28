@@ -1,0 +1,2104 @@
+[
+  {
+    "name": "get_profile",
+    "title": "View Profile",
+    "description": "Get the user's full Remoet profile. IMPORTANT: Always call this first before making any changes.\n\nPROFILE GAP ANALYSIS: After fetching, run a full evaluation and proactively surface findings ranked by impact. Offer to fix each issue on the spot. Be encouraging, not critical \u2014 \"Your profile has a solid foundation, here are a few things that could make it stand out.\"\n\nCHECK 1 \u2014 SUMMARY & DISCOVERABILITY (highest impact):\n- Summary empty or weak? Under 100 chars, no tech stack mentioned, no years of experience, or no differentiator = needs rewriting. See update_profile for guidance. This is the first thing companies read.\n- Call get_visibility. If NONE, suggest STARRED \u2014 creates a two-way match where starred companies can discover the user.\n- Check get_starred_listings. Zero stars = empty job feed. Help them find and star companies matching their tech stack.\n- Cross-reference starred companies' tech stacks against the user's skills. Flag mismatches that add noise.\n\nCHECK 2 \u2014 PROJECTS (what makes them special?):\n- Zero projects = #1 gap for junior/mid developers. Projects differentiate candidates with similar job histories. Ask about side projects, open source, personal apps, hackathons, scripts, blogs.\n- Projects without URLs or descriptions are barely better than no projects.\n\nCHECK 3 \u2014 WORK HISTORY (can they do this?):\n- Zero jobs = critical gap. Walk user through adding experience or importing from CV.\n- Jobs without descriptions = missed opportunity. Each role should explain what was built, what tech was used, and what impact it had.\n- Descriptions without measurable impact? Push for specifics: users served, performance gains, revenue impact, team size. \"Built React frontend\" \u2192 \"Built React frontend serving 50K monthly users, reducing load time by 40%.\"\n- Technologies array empty on jobs with tech in the description? Ask to add them \u2014 they feed into job matching.\n- Remote experience not highlighted? If they've worked remotely, ensure isRemote: true \u2014 remote hiring managers look for proof.\n\nCHECK 4 \u2014 BASICS (will they even look?):\n- Avatar missing? Profiles without photos get less engagement.\n- Location vague? \"Europe\" is too broad. Companies need timezone and jurisdiction. \"Lund, Sweden\" is specific.\n- GitHub/LinkedIn missing? Table stakes for developers.\n\nCHECK 5 \u2014 EDUCATION:\n- Empty education? Ask about degrees, bootcamps, certifications, notable courses.\n\nIf the user shares a CV, resume, or website, populate their entire profile (update_profile, create_work_experience, create_project, create_education), then search and star matching companies, and finally surface relevant jobs \u2014 all in one go.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_work_experience",
+    "title": "View Work Experience",
+    "description": "Get the user's work experience / job history (each entry returns its ID for update/delete). Use this to ground anything you say about the user's background. After fetching: flag duplicates, placeholder data, missing descriptions, missing technologies arrays, or missing measurable impact. Each weakness is something you can fix on the next turn \u2014 surface them ranked by impact and offer to fix.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_projects",
+    "title": "View Projects",
+    "description": "Get the user's projects and portfolio items (each entry returns its ID for update/delete). For junior/mid developers, projects are the #1 differentiator \u2014 two candidates with similar job histories are separated by what they built. Flag: zero projects (massive gap, ask about side work, OSS, hackathons, scripts, blogs), projects without URLs, projects without technology arrays. Offer to fix each via update_project or create_project.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_education",
+    "title": "View Education",
+    "description": "Get the user's education history (each entry returns its ID for update/delete). Education matters most when a user has limited work history \u2014 for senior candidates it's a tiebreaker. Flag: empty education (ask about degrees, bootcamps, notable certifications, MOOCs), entries without dates, entries without field of study. Offer to fix each via create_education.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_links",
+    "title": "View Links",
+    "description": "Get the user's social and professional links (GitHub, LinkedIn, Twitter, website, etc.). These are table-stakes for most companies \u2014 recruiters click them before reading anything else. After fetching, flag missing critical links: GitHub is mandatory for engineering roles, LinkedIn is expected by most companies, a personal site/portfolio is a strong differentiator. If any are missing, offer to add them via update_profile.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "update_profile",
+    "title": "Update Profile",
+    "description": "Update the user's Remoet profile. Only provide the fields you want to change \u2014 omitted fields are left as-is. Pass null to clear a field. Always read the current profile first with get_profile. If the source data (CV, website, etc.) is missing information for a field, ask the user rather than guessing or leaving it blank. Write professional, clean descriptions \u2014 never copy placeholder text like \"lorem ipsum\".\n\nSUMMARY WRITING GUIDE: The summary is the most important field \u2014 it's the first thing companies read. A strong summary follows this pattern: [Role] with [X years] experience in [core tech stack]. [One differentiator or achievement]. Example: \"Senior Full-Stack Developer with 8 years of experience in React, Node.js, and AWS. Built and scaled a SaaS platform serving 200K users.\" Keep it under 500 characters \u2014 enough for a second differentiator sentence if needed. Avoid generic fluff like \"passionate developer\" or \"team player\" \u2014 be specific and quantifiable.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "description": "Your public profile URL slug (must be unique)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "email": {
+          "description": "Update your email address",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "description": "Your full name",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "avatarUrl": {
+          "description": "Your avatar/photo URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "phone": {
+          "description": "Your phone number",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "description": "Your personal website URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "description": "A brief professional summary or bio",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location": {
+          "description": "Your location",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "githubUrl": {
+          "description": "Your GitHub profile URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "facebookUrl": {
+          "description": "Your Facebook profile URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "twitterUrl": {
+          "description": "Your Twitter/X profile URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "linkedinUrl": {
+          "description": "Your LinkedIn profile URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "youtubeUrl": {
+          "description": "Your YouTube channel URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "create_work_experience",
+    "title": "Add Work Experience",
+    "description": "Add a work experience entry to the user's profile. Before creating, always check existing entries with get_work_experience to avoid duplicates. If the source data is incomplete (e.g. missing dates, company name, or description), ask the user to fill in the gaps rather than guessing. Dates must be accurate \u2014 ask the user to confirm approximate dates if the source only says something like \"2019\" or \"Summer 2020\". Write clear, professional descriptions. Do not fabricate or embellish information.\n\nDESCRIPTION QUALITY: Every job description should answer WHAT (built/designed/led what), HOW (which technologies, methodologies), IMPACT (users served, performance gains, revenue, uptime), and SCOPE (team size, user base). If the user gives a vague description like \"Worked on the backend\", ask follow-up questions: \"What did you build specifically? What tech did you use? How many users or requests did it handle? What was the team size?\" Push for measurable outcomes \u2014 numbers make descriptions 10x stronger.\n\nTECHNOLOGIES: Always populate the technologies array \u2014 it feeds into job matching. If the description mentions technologies not in the array, ask to add them.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Job title"
+        },
+        "companyName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Company name"
+        },
+        "companyUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Company website URL"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "Start date (ISO 8601, e.g. \"2024-01-15\")"
+        },
+        "endDate": {
+          "description": "End date (ISO 8601), or null if current",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "description": "Whether this is your current job"
+        },
+        "isRemote": {
+          "type": "boolean",
+          "description": "Whether this job is remote"
+        },
+        "technologies": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": "Technologies used (e.g. [\"React\", \"Node.js\"])"
+        },
+        "description": {
+          "description": "Job description",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "companyName",
+        "companyUrl",
+        "startDate",
+        "isCurrent",
+        "isRemote",
+        "technologies"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "update_work_experience",
+    "title": "Update Work Experience",
+    "description": "Update an existing work experience entry. Only provide the fields you want to change \u2014 omitted fields are left as-is. Use get_work_experience first to find the ID. Prefer this over delete + recreate \u2014 it preserves the entry ID.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the job to update"
+        },
+        "title": {
+          "description": "Job title",
+          "type": "string",
+          "maxLength": 200
+        },
+        "companyName": {
+          "description": "Company name",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "companyUrl": {
+          "description": "Company website URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "startDate": {
+          "description": "Start date (ISO 8601)",
+          "type": "string"
+        },
+        "endDate": {
+          "description": "End date (ISO 8601), or null if current",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isCurrent": {
+          "description": "Whether this is your current job",
+          "type": "boolean"
+        },
+        "isRemote": {
+          "description": "Whether this job is remote",
+          "type": "boolean"
+        },
+        "technologies": {
+          "description": "Technologies used",
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "description": {
+          "description": "Job description",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "delete_work_experience",
+    "title": "Delete Work Experience",
+    "description": "Remove a work experience entry from the user's profile. Use this to clean up duplicates, placeholder/test entries, or obviously incorrect data. Always confirm with the user before deleting entries that look like they could be real data.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the work experience entry to delete"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "create_project",
+    "title": "Add Project",
+    "description": "Add a project to the user's portfolio. Before creating, always check existing projects with get_projects to avoid duplicates. If the source data is incomplete (e.g. missing description, technologies, or dates), ask the user to fill in the gaps. Dates must be accurate \u2014 ask the user to confirm if unclear. Write clear, professional descriptions. Do not fabricate or embellish information.\n\nPROJECT COACHING: Many users underestimate what counts as a project. Help them recognize work they might not think of: side projects, open-source contributions, hackathon entries, internal tools, scripts that saved time, blogs/tutorials, personal apps, browser extensions, Discord bots. Even small projects demonstrate initiative and practical skills. For junior/mid developers, projects are the #1 differentiator \u2014 two candidates with similar job histories are separated by their projects.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Project title"
+        },
+        "shortDescription": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "A one-line summary of the project"
+        },
+        "description": {
+          "description": "Full project description",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role": {
+          "description": "Your role in the project",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "technologies": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": "Technologies used"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "description": "Whether this is an ongoing project"
+        },
+        "isRemote": {
+          "type": "boolean",
+          "description": "Whether this was remote work"
+        },
+        "isOpenSource": {
+          "type": "boolean",
+          "description": "Whether this is open source"
+        },
+        "startDate": {
+          "description": "Start date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endDate": {
+          "description": "End date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repoUrl": {
+          "description": "Repository URL",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "demoUrl": {
+          "description": "Live demo URL",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "shortDescription",
+        "technologies",
+        "isCurrent",
+        "isRemote",
+        "isOpenSource"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "update_project",
+    "title": "Update Project",
+    "description": "Update an existing project. Only provide the fields you want to change \u2014 omitted fields are left as-is. Use get_projects first to find the ID. Prefer this over delete + recreate \u2014 it preserves the entry ID.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the project to update"
+        },
+        "title": {
+          "description": "Project title",
+          "type": "string",
+          "maxLength": 200
+        },
+        "shortDescription": {
+          "description": "A one-line summary",
+          "type": "string",
+          "maxLength": 500
+        },
+        "description": {
+          "description": "Full project description",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role": {
+          "description": "Your role in the project",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "technologies": {
+          "description": "Technologies used",
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "isCurrent": {
+          "description": "Whether this is an ongoing project",
+          "type": "boolean"
+        },
+        "isRemote": {
+          "description": "Whether this was remote work",
+          "type": "boolean"
+        },
+        "isOpenSource": {
+          "description": "Whether this is open source",
+          "type": "boolean"
+        },
+        "startDate": {
+          "description": "Start date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endDate": {
+          "description": "End date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repoUrl": {
+          "description": "Repository URL",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "demoUrl": {
+          "description": "Live demo URL",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "delete_project",
+    "title": "Delete Project",
+    "description": "Remove a project from the user's portfolio. Use this to clean up duplicates, placeholder/test entries, or obviously incorrect data. Always confirm with the user before deleting entries that look like they could be real data.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the project to delete"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "create_education",
+    "title": "Add Education",
+    "description": "Add an education entry to the user's profile. Before creating, always check existing education with get_education to avoid duplicates. If the source data is incomplete (e.g. missing dates, field of study, or institution URL), ask the user to fill in the gaps. Dates must be accurate \u2014 ask the user to confirm approximate dates if the source is vague. Do not fabricate or embellish information.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "institution": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Institution name (e.g. \"MIT\", \"Lund University\")"
+        },
+        "institutionUrl": {
+          "description": "Institution website URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "studyLevel": {
+          "description": "Level of study: HIGH_SCHOOL, ASSOCIATE, BACHELOR, MASTER, DOCTORATE, BOOTCAMP, or OTHER",
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "HIGH_SCHOOL",
+                "ASSOCIATE",
+                "BACHELOR",
+                "MASTER",
+                "DOCTORATE",
+                "BOOTCAMP",
+                "OTHER"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fieldOfStudy": {
+          "description": "Field of study (e.g. \"Computer Science\")",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "startDate": {
+          "description": "Start date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endDate": {
+          "description": "End date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "description": "Whether you are currently studying here"
+        },
+        "description": {
+          "description": "Description of studies, achievements, etc.",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "institution",
+        "isCurrent"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "update_education",
+    "title": "Update Education",
+    "description": "Update an existing education entry. Only provide the fields you want to change \u2014 omitted fields are left as-is. Use get_education first to find the ID. Prefer this over delete + recreate \u2014 it preserves the entry ID.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the education entry to update"
+        },
+        "institution": {
+          "description": "Institution name",
+          "type": "string",
+          "maxLength": 200
+        },
+        "institutionUrl": {
+          "description": "Institution website URL",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "studyLevel": {
+          "description": "Level of study: HIGH_SCHOOL, ASSOCIATE, BACHELOR, MASTER, DOCTORATE, BOOTCAMP, or OTHER",
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "HIGH_SCHOOL",
+                "ASSOCIATE",
+                "BACHELOR",
+                "MASTER",
+                "DOCTORATE",
+                "BOOTCAMP",
+                "OTHER"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fieldOfStudy": {
+          "description": "Field of study",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "startDate": {
+          "description": "Start date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "endDate": {
+          "description": "End date (ISO 8601)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isCurrent": {
+          "description": "Whether you are currently studying here",
+          "type": "boolean"
+        },
+        "description": {
+          "description": "Description of studies, achievements, etc.",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 5000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "delete_education",
+    "title": "Delete Education",
+    "description": "Remove an education entry from the user's profile. Use this to clean up duplicates, placeholder/test entries, or obviously incorrect data. Always confirm with the user before deleting entries that look like they could be real data.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the education entry to delete"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "search_listings",
+    "title": "Search Companies",
+    "description": "Search for companies on Remoet. Only companies are returned (not freelance platforms or job boards). Returns a summary for each company \u2014 use get_listing with the slug to see full details (description, perks, URLs).\n\nCRITICAL: Only star companies whose tech stack OVERLAPS with the user's skills. A JavaScript developer should NOT star a company that only uses Go, Rust, or Java. Stars are the user's noise filter \u2014 irrelevant stars pollute their job feed with jobs they can't apply to. Every star must make sense for THIS user.\n\nBest approach: 1) Read the user's profile to understand their tech stack and experience, 2) Search listings filtering by the user's actual technologies, 3) Review results and only star companies where the tech stack genuinely matches.\n\nSEARCH LOGIC: Relevance scoring ranks results by: exact name match (+10), name starts with query (+5), name contains query (+2), and each tech stack match (+20 per matching technology). Text search also matches description and about fields. Technologies are auto-normalized (e.g. \"ts\" \u2192 \"TypeScript\", \"react\" \u2192 \"React\"). Combine searchQuery and techStack for best results.\n\nIf the user's interests aren't clear from their profile, ask them what kind of companies they're looking for.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "searchQuery": {
+          "description": "Search keyword \u2014 matches company name, description, and about text",
+          "type": "string"
+        },
+        "techStack": {
+          "description": "Filter by technologies (e.g. [\"React\", \"Node.js\", \"TypeScript\"]). Technologies are auto-normalized.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sortBy": {
+          "description": "Sort results by: stars (most popular), jobCount (most active hiring), or name (alphabetical). Default: stars",
+          "type": "string",
+          "enum": [
+            "stars",
+            "jobCount",
+            "name"
+          ]
+        },
+        "page": {
+          "description": "Page number, starting from 1 (default: 1)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "pageSize": {
+          "description": "Results per page, max 100 (default: 20)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_starred_listings",
+    "title": "View Starred Companies",
+    "description": "Get the list of companies the user has already starred. Returns a summary per company \u2014 use get_listing with the slug for full details. Use this to audit their current stars \u2014 if any starred company's tech stack doesn't overlap with the user's skills, suggest unstarring it (but warn that unstarring consumes unstar budget).\n\nSTAR QUALITY AUDIT: Cross-reference the user's profile technologies against each starred company's tech stack. Flag companies with zero overlap \u2014 e.g. a React/Node developer starring a company that only uses Go and Rust. Suggest companies they should star but haven't \u2014 search for companies matching their tech stack and compare against current stars. A curated star list is the foundation of a useful job feed.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_listing",
+    "title": "View Company Details",
+    "description": "Get detailed information about a specific company listing by its slug. Use this to review a company before deciding whether to star it. Returns the company's full description, tech stack, perks, job count, and URLs. Pair with get_star_count to check budget before starring.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "description": "The URL slug of the listing (e.g. \"digital-ocean\", \"stripe\")"
+        }
+      },
+      "required": [
+        "slug"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "star_listing",
+    "title": "Star Company",
+    "description": "Star/save a company listing. Starring subscribes you to their job postings \u2014 starred company jobs appear in get_starred_jobs. IMPORTANT: Only company-type listings can be starred. Starring is FREE \u2014 it does not consume budget. However, there is a limit on how many active stars you can have at once (based on your plan). Call get_star_count to check remaining star slots. CRITICAL: Only star companies where the user's tech stack genuinely overlaps with the company's tech stack. A React/Node developer should NOT star a company that only uses Go or Java. Irrelevant stars pollute the job feed with noise. Every star must be a deliberate, high-quality match.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "listingId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the listing to star"
+        }
+      },
+      "required": [
+        "listingId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "unstar_listing",
+    "title": "Unstar Company",
+    "description": "Remove a star from a company listing. WARNING: Unstarring consumes from your unstar budget (per billing period). This prevents unlimited cycling of stars. Call get_star_count first to check your remaining unstar budget. Only unstar if the company is truly not relevant.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "listingId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the listing to unstar"
+        }
+      },
+      "required": [
+        "listingId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_star_count",
+    "title": "View Star Budget",
+    "description": "Get your star and unstar budget status. Starring is free but capped at maxActiveStars. Unstarring consumes from a per-period unstar budget to prevent unlimited cycling. Returns: currentStars (active stars), maxActiveStars (cap for your plan), starSlotsRemaining (how many more you can star), unstarBudgetUsed (unstars this period), unstarBudgetLimit (max unstars per period, or \"unlimited\"), unstarBudgetRemaining (unstars left, or \"unlimited\"), resetsAt (when the unstar budget resets), and plan (your subscription tier). Help the user make every star count \u2014 choose companies carefully.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_starred_jobs",
+    "title": "View Job Feed",
+    "description": "Get job postings from your starred companies. This is the user's main job feed \u2014 if the user has no stars, this returns nothing. Quality depends on starring the RIGHT companies (ones whose tech stack matches the user's skills). If results are empty or poor, check get_starred_listings and suggest better stars. Starring is free so they can star more companies to improve their feed. Supports filtering by search query, location, tech stack, remote policy, experience level, and minimum salary. Results are paginated. Use save_job to bookmark good matches so the user doesn't lose them.\n\nSEARCH STRATEGY: For job recommendations, run multiple searches and merge results: first a broad search (no filters) to see what's available, then targeted searches by the user's top 1-2 technologies. This ensures comprehensive coverage \u2014 a single filtered query can miss good roles. The techStack filter uses AND logic \u2014 specifying [\"React\", \"TypeScript\", \"Node.js\"] only returns jobs matching ALL three, so start with 1-2 core technologies, not the user's entire stack. If results are sparse, drop filters one at a time. Use searchQuery for role-based searches (\"senior engineer\", \"frontend\", \"platform\") and techStack for technology-based filtering.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "searchQuery": {
+          "description": "Search keywords for job title, summary, or tech stack",
+          "type": "string"
+        },
+        "locationQuery": {
+          "description": "Filter by location or remote restrictions",
+          "type": "string"
+        },
+        "techStack": {
+          "description": "Filter by technologies (e.g. [\"React\", \"Node.js\"])",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remotePolicy": {
+          "description": "Filter by remote policy: \"remote\", \"hybrid\", \"onsite\", or \"remote-restricted\"",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "onsite",
+              "hybrid",
+              "remote",
+              "remote-restricted"
+            ]
+          }
+        },
+        "experienceLevel": {
+          "description": "Filter by experience level: \"junior\", \"mid\", or \"senior\"",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "junior",
+              "mid",
+              "senior"
+            ]
+          }
+        },
+        "salaryMin": {
+          "description": "Minimum salary filter",
+          "type": "number"
+        },
+        "sortBy": {
+          "description": "Sort field (default: createdAt)",
+          "type": "string",
+          "enum": [
+            "createdAt",
+            "remotePolicy",
+            "salaryEnriched.to",
+            "experienceLevel"
+          ]
+        },
+        "sortOrder": {
+          "description": "Sort direction (default: desc)",
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        },
+        "page": {
+          "description": "Page number, starting from 1",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "pageSize": {
+          "description": "Results per page (max 50, default 20)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "save_job",
+    "title": "Save Job",
+    "description": "Save a job to the user's list for later. Supports both AI-extracted jobs (from get_starred_jobs) and internal partner jobs. This gives the agent memory across sessions \u2014 saved jobs persist so the user doesn't lose track of interesting roles. Optionally attach a note (e.g. \"Great fit for React skills\", \"Follow up next week\"). Each job can only be saved once.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the job to save"
+        },
+        "jobType": {
+          "description": "Type of job: \"ai_job\" (from get_starred_jobs, default) or \"listing_job\" (internal partner job)",
+          "type": "string",
+          "enum": [
+            "ai_job",
+            "listing_job"
+          ]
+        },
+        "note": {
+          "description": "Optional note about why this job is interesting",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "jobId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_saved_jobs",
+    "title": "View Saved Jobs",
+    "description": "Get the user's saved jobs list. This is the user's job search memory \u2014 shows all jobs they've bookmarked across sessions, with notes and job details. Includes both AI-extracted jobs and internal partner jobs (see jobType field). IMPORTANT: Always call this before get_starred_jobs when helping with job search \u2014 it shows the user's existing pipeline so you can avoid re-recommending jobs they've already saved or dismissed. Paginated, newest saves first. Each saved job includes isActive and deactivatedAt fields. If isActive is false, the job is no longer appearing on the company's careers page \u2014 this usually means it was filled or expired, but could also be a temporary scraper issue (there is a grace period before deactivation). If job is null, the listing was deleted entirely. Suggest the user check the company's careers page directly if a saved job they care about gets deactivated.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "page": {
+          "description": "Page number, starting from 1 (default: 1)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "pageSize": {
+          "description": "Results per page, max 50 (default: 20)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "update_saved_job_note",
+    "title": "Update Saved Job Note",
+    "description": "Update the note on a saved job. Use this to add context, track application status, or record follow-up reminders. Pass null to clear the note.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "savedJobId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the saved job entry (not the job ID)"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Updated note, or null to clear"
+        }
+      },
+      "required": [
+        "savedJobId",
+        "note"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "unsave_job",
+    "title": "Remove Saved Job",
+    "description": "Remove a job from the user's saved list. Use get_saved_jobs first to find the saved job ID. Confirm with the user before removing.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "savedJobId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the saved job entry to remove"
+        }
+      },
+      "required": [
+        "savedJobId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_visibility",
+    "title": "View Visibility",
+    "description": "Get the user's current profile visibility setting. Three states: NONE (hidden \u2014 this is the default for new accounts), STARRED (visible only to starred companies \u2014 the recommended setting), ALL (visible to every company on Remoet). If the user is at NONE and has starred companies, flag it: they're cutting off a key benefit of the platform (being discovered by companies they already like). Offer to switch to STARRED via update_visibility.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "update_visibility",
+    "title": "Update Visibility",
+    "description": "Update who can see the user's profile in company candidate lists. There are 3 levels:\n\n- NONE \u2014 Profile is hidden from all companies. Maximum privacy.\n- STARRED \u2014 Profile is visible ONLY to companies the user has starred. This is the recommended setting and the default \u2014 it means companies you've chosen to follow can discover you as a candidate, but no one else can.\n- ALL \u2014 Profile is visible to every company on Remoet. Maximum exposure, but less privacy.\n\nAlways explain the trade-offs to the user before changing this. STARRED is the sweet spot for most users \u2014 it creates a two-way match (you follow them, they can find you).",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "STARRED",
+            "ALL"
+          ],
+          "description": "The visibility level: NONE (hidden), STARRED (only starred companies), ALL (everyone)"
+        }
+      },
+      "required": [
+        "visibility"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_digests",
+    "title": "View Digests",
+    "description": "Get the user's job digests \u2014 weekly email summaries of new jobs from their starred companies. Returns the 20 most recent digests. For weekly email summaries only. Always use get_starred_jobs for real-time job searching \u2014 digests are delayed (free tier is 1 week behind the current scrape) and less interactive. Only use this tool if the user specifically asks about their digests or email summaries.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_digest",
+    "title": "View Digest",
+    "description": "Get a specific digest by ID. Returns the full digest content \u2014 a markdown-formatted summary of jobs found from the user's starred companies during that period. Each job entry includes the title, application URL, salary, remote policy, experience level, and tech stack. Note: Free tier digests are 1 week behind the current scrape \u2014 the jobs shown may no longer be open. For real-time jobs, use get_starred_jobs instead.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the digest to retrieve"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_apps",
+    "title": "Browse Apps",
+    "description": "List approved apps built on the Remoet platform. These are community and official apps that extend Remoet's functionality. Each app has a repo URL for deployment and a demo URL to try it out. Use this to help users discover tools that complement their Remoet workflow \u2014 e.g. portfolio sites, CV generators, job trackers, etc. You can filter by category or tag.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "category": {
+          "description": "Filter by category",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Filter by tag",
+          "type": "string"
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_linktrees",
+    "title": "View Link Trees",
+    "description": "Get all the user's link tree pages (each returns its ID and slug). Link trees are shareable single-page URLs the user can put on a CV, email signature, or job application \u2014 Remoet tracks views and clicks per link, so recruiter engagement is measurable. If the user has none, suggest creating one via create_linktree pulling their social links from the profile.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_linktree",
+    "title": "View Link Tree",
+    "description": "Get a specific link tree page by its public slug. Returns the page content plus engagement data (views, clicks per link) \u2014 useful if the user asks \"has anyone looked at my link tree?\". Use get_linktrees first if you need the slug.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "description": "The URL slug of the link tree"
+        }
+      },
+      "required": [
+        "slug"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "create_linktree",
+    "title": "Create Link Tree",
+    "description": "Create a link tree page \u2014 a shareable page with the user's links (social media, portfolio, GitHub, etc.). Link tree limits: Free 1, Pro 10, Max unlimited. The slug becomes the public URL. Slug rules: 5-20 characters, lowercase letters, numbers, and hyphens only, cannot start/end with a hyphen. Must be unique. Use the user's name or handle as a base for the slug. Pull links from the user's profile (get_profile) \u2014 githubUrl, linkedinUrl, twitterUrl, url, etc.\n\nTIP: Suggest the user adds their link tree URL to their CV or job applications. Remoet tracks views and link clicks, so they can see if a recruiter has opened it.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "URL slug (5-20 chars, lowercase, hyphens allowed, must be unique)"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Page title (e.g. \"Carl Igelstr\u00f6m \u2014 Links\")"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Short description for the page"
+        },
+        "links": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Display label (e.g. \"GitHub\", \"LinkedIn\", \"Portfolio\")"
+              },
+              "url": {
+                "type": "string",
+                "maxLength": 500,
+                "description": "The URL"
+              }
+            },
+            "required": [
+              "label",
+              "url"
+            ]
+          },
+          "description": "Array of links to display on the page (max 50)"
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "description",
+        "links"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "delete_linktree",
+    "title": "Delete Link Tree",
+    "description": "Delete a link tree page. Use get_linktrees to find the ID first. Confirm with the user before deleting.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the link tree to delete"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "apply_to_job",
+    "title": "Apply to Job",
+    "description": "Apply to an internal job posting on behalf of the user. The job must be published and not expired. The user can only apply once per job \u2014 duplicate applications are rejected.\n\nIMPORTANT: Before applying, confirm with the user that they want to apply. Review the job details (use get_starred_jobs or get_listing) and cross-reference against the user's profile. Flag any gaps between the job requirements and the user's skills \u2014 e.g. \"This role asks for Go experience which isn't on your profile. Still want to apply?\" This helps the user make informed decisions and avoids wasting applications. Do NOT apply to jobs without the user's explicit consent.\n\nOnly works for internal jobs (applicationType: \"internal\"). For external jobs, direct the user to the applicationUrl instead.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the job to apply to"
+        }
+      },
+      "required": [
+        "jobId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_applications",
+    "title": "View Applications",
+    "description": "Get the user's job applications. Returns a paginated list with status, job title, company name, and timestamps. Use this to help the user track their application pipeline. Filter by status to focus on active applications, pending offers, etc.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Filter by application status",
+          "type": "string",
+          "enum": [
+            "applied",
+            "screening",
+            "interview_scheduled",
+            "technical_assessment",
+            "offer_extended",
+            "accepted",
+            "rejected",
+            "withdrawn"
+          ]
+        },
+        "page": {
+          "description": "Page number, starting from 1 (default: 1)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "limit": {
+          "description": "Results per page, max 100 (default: 10)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_application",
+    "title": "View Application",
+    "description": "Get details of a specific job application by ID. Returns the application status, job info, company info, and timestamps.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application"
+        }
+      },
+      "required": [
+        "applicationId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "withdraw_application",
+    "title": "Withdraw Application",
+    "description": "Withdraw a job application. This is irreversible for applications that have been accepted or rejected. Confirm with the user before withdrawing.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application to withdraw"
+        }
+      },
+      "required": [
+        "applicationId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "accept_offer",
+    "title": "Accept Offer",
+    "description": "Accept a job offer. Only works when the application status is \"offer_extended\". Confirm with the user before accepting.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application with the offer"
+        }
+      },
+      "required": [
+        "applicationId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "reject_offer",
+    "title": "Reject Offer",
+    "description": "Reject a job offer. Only works when the application status is \"offer_extended\". Confirm with the user before rejecting.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application with the offer"
+        }
+      },
+      "required": [
+        "applicationId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "add_application_note",
+    "title": "Add Application Note",
+    "description": "Add a private note to a job application. Notes are only visible to the user (not the company). Use this to help the user track thoughts, prep notes, follow-up reminders, or any context about the application. Max 1000 characters.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "The note content (max 1000 characters)"
+        }
+      },
+      "required": [
+        "applicationId",
+        "note"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_application_events",
+    "title": "View Application Timeline",
+    "description": "Get the timeline of events for a job application. Shows status changes, notes, messages sent, interview scheduling, and other milestones. Events are sorted chronologically (oldest first). Public events are visible to both parties; private events (like notes) are only visible to the user.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application"
+        }
+      },
+      "required": [
+        "applicationId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "send_application_message",
+    "title": "Send Application Message",
+    "description": "Send a message to the company on a job application. Messages are visible to both the user and the company. Use this for follow-ups, questions about the role, or any communication with the hiring team. Max 1000 characters.\n\nIMPORTANT: Do NOT write or draft messages for the user. Ask the user to write their own message \u2014 it should be in their voice, not yours. You can remind them to keep it concise and specific, but the words must be theirs. Once they give you the message text, confirm they're happy with it before sending.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application"
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "The message content (max 1000 characters)"
+        }
+      },
+      "required": [
+        "applicationId",
+        "content"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_application_messages",
+    "title": "View Application Messages",
+    "description": "Get the message thread for a job application. Shows all messages between the user and the company, sorted newest first. Paginated.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "description": "The ID of the application"
+        },
+        "page": {
+          "description": "Page number, starting from 1 (default: 1)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "limit": {
+          "description": "Results per page, max 100 (default: 10)",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "applicationId"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_subscription",
+    "title": "View Subscription",
+    "description": "Get the user's current subscription plan, all plan limits, and today's usage. Call this when a limit is hit to show the user where they stand and what upgrading would unlock. Returns plan tier, star caps, unstar budget, daily request limits, job data delay status, link tree cap, and today's MCP/API request counts.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_usage",
+    "title": "View Usage",
+    "description": "Get the user's current usage against every budget the platform enforces: active star count vs star cap, unstars used this month vs monthly unstar budget, MCP requests made today vs daily MCP cap, REST API requests made today vs daily REST cap. Each budget includes a \"resetsAt\" ISO timestamp so you can tell the user exactly when the counter clears.\n\nCalling this tool is free: it does not count against the daily MCP cap or the API key's request count, so check eagerly. Call it when the user asks \"how close am I to my limit?\" or \"when does X reset?\", or before firing 3+ write tools in a row (star_listing, update_profile, apply_to_job, etc.) so you can pace yourself. A limit value of \"unlimited\" means no cap for that budget.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "get_upgrade_link",
+    "title": "Get Upgrade Link",
+    "description": "Get a Stripe Checkout URL the user can open to upgrade their subscription. This tool does NOT charge the user \u2014 it only returns a link; payment happens in the browser when the user completes Stripe Checkout. Present the \"checkoutUrl\" as a clickable link. Supports upgrades only: free\u2192pro, free\u2192max, pro\u2192max. For downgrades or cancellation, direct the user to https://www.remoet.dev/settings.\n\nConfirm with the user before calling this. Note: for a user who already has a paid subscription, changing tier (pro\u2192max) may apply IMMEDIATELY with prorated billing against their existing payment method (response \"message\" instead of \"checkoutUrl\") \u2014 i.e. it can charge without a checkout step, so get explicit confirmation first. free\u2192paid always returns a checkoutUrl (no charge until the user completes Stripe Checkout).\n\nThis tool is environment-aware. The response includes an \"environment\" field (local | stage | production). Only \"production\" charges real money \u2014 local and stage run Stripe in test mode (the response includes a sandboxNote field with test-card instructions). Always tell the user which environment they're entering before they click through.",
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "plan": {
+          "type": "string",
+          "enum": [
+            "pro",
+            "max"
+          ],
+          "description": "The plan to upgrade to"
+        },
+        "confirm": {
+          "description": "Set true ONLY after the user has explicitly agreed. Required for an immediate pro\u2192max upgrade (charges the existing card right away). Not needed for free\u2192paid, which returns a checkout link and charges nothing until the user completes Stripe Checkout.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "plan"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    },
+    "_meta": {
+      "ui/resourceUri": "ui://upgrade/card.1de76682.html",
+      "ui": {
+        "resourceUri": "ui://upgrade/card.1de76682.html"
+      }
+    }
+  }
+]
