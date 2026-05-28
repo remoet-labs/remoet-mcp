@@ -1,0 +1,13 @@
+# Nothing in this repo gets COPY'd into the image (the Dockerfile only
+# installs mcp-remote globally), but excluding non-build files keeps the
+# build context small and the build deterministic.
+.git
+.gitignore
+.github
+*.md
+*.png
+.claude-plugin
+.mcp.json
+server.json
+tools.md
+LICENSE

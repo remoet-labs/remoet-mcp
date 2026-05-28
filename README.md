@@ -77,6 +77,10 @@ openclaw skills install remoet
 
 > I'm a Rails, React, and Postgres dev. Find companies that match my stack, star the best fits, and pull jobs from my shortlist.
 
+## Note on the Dockerfile
+
+The `Dockerfile` in this repo is **for directory-registry build verification only** (Glama and similar systems that introspect a running MCP server to score it). End users do not need to build or run it. The image runs `mcp-remote` to forward stdio MCP traffic to the hosted `https://api.remoet.dev/mcp`, so the introspection call can read the live tool catalog while the actual backend stays closed-source.
+
 ## License
 
 [MIT](./LICENSE). The wrapper is open; the Remoet backend it points at is a hosted service.
