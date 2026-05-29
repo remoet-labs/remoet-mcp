@@ -11,7 +11,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://api.remoet.dev/mcp"
+      "url": "https://api.remoet.dev/mcp/oauth"
     }
   ]
 }
