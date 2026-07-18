@@ -13,7 +13,7 @@ Most users connect to the hosted server directly (see [Quick install](#quick-ins
 
 ## What it does
 
-Remoet has company-level tech stack data nobody else has, so an agent can match you to companies by the technologies they actually use, not recruiter keyword tags. Star the companies that fit, and your agent pulls fresh jobs from that shortlist. It also manages your profile, applications, saved jobs, and weekly digests, all over MCP.
+Remoet derives each company's tech stack from the roles it is hiring for right now, not from self-reported adoption lists that go stale. So an agent can match you to companies by the technologies they actually build on today, not recruiter keyword tags. Star the companies that fit, and your agent pulls fresh jobs from that shortlist. It also manages your profile, applications, saved jobs, and weekly digests, all over MCP.
 
 Free tier is the whole product with caps. Paid tiers unlock real-time job data and higher limits. No credit card for the free tier.
 
