@@ -1,6 +1,6 @@
 # Remoet MCP server
 
-Connect your AI agent to [Remoet](https://remoet.dev), the job platform built for agents. Search tech companies by their real tech stack, star the ones you'd actually work for, pull jobs from that shortlist, and manage your developer profile, all through conversation.
+Connect your AI agent to [Remoet](https://remoet.dev), the job platform built for agents. Search the public job catalogue, find tech companies by the stack they actually build on, star the ones you'd work for so their new jobs land in your feed, and manage your developer profile, all through conversation.
 
 This repo ships a **local stdio MCP server** (Node + TypeScript) plus the metadata MCP clients and directory registries need. The local server advertises Remoet's full tool catalog (snapshotted from the live server) and forwards calls to the hosted MCP at `https://api.remoet.dev/mcp` with your Bearer key. The hosted server is closed source and remains the source of truth for execution.
 
@@ -13,9 +13,11 @@ Most users connect to the hosted server directly (see [Quick install](#quick-ins
 
 ## What it does
 
-Remoet derives each company's tech stack from the roles it is hiring for right now, not from self-reported adoption lists that go stale. So an agent can match you to companies by the technologies they actually build on today, not recruiter keyword tags. Star the companies that fit, and your agent pulls fresh jobs from that shortlist. It also manages your profile, applications, saved jobs, and weekly digests, all over MCP.
+The job catalogue is public. `search_jobs` reads every role on the open board at [remoet.dev/jobs](https://remoet.dev/jobs), across all companies, before you star anything.
 
-Free tier is the whole product with caps. Paid tiers unlock real-time job data and higher limits. No credit card for the free tier.
+A star is about delivery, not access. Remoet derives each company's tech stack from the roles it is hiring for right now, not from self-reported adoption lists that go stale, so an agent can match you to companies by the technologies they actually build on today. Star the ones that fit and their new jobs land in your feed, with the company's full stack unlocked. Remoet also keeps your profile, saved jobs, applications and weekly digests on file, all over MCP.
+
+Remoet is free for job seekers. There are no paid plans and no credit card. One set of limits applies to every account, and `get_account` reports where you stand against them.
 
 See [`tools.md`](./tools.md) for the full tool catalog.
 
@@ -104,7 +106,13 @@ docker run --rm -i -e REMOET_API_KEY="<your-key>" remoet-mcp
 
 The container's entrypoint runs the stdio server. Pipe MCP JSON-RPC frames into the container; tool calls are forwarded to the hosted server with your Bearer key.
 
-The published tool catalog lives in [`data/tools.json`](./data/tools.json) (snapshotted from the live `tools/list`). Refresh it whenever the hosted server's tool surface changes.
+The published tool catalog lives in [`data/tools.json`](./data/tools.json), generated from the live `tools/list`. Refresh it whenever the hosted server's tool surface changes:
+
+```bash
+REMOET_API_KEY="<your-key>" npm run snapshot:tools
+```
+
+The script rewrites the snapshot and reports any tool that [`tools.md`](./tools.md) has fallen out of step with.
 
 ## License
 
