@@ -2,6 +2,10 @@
 
 Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live `tools/list` request is the source of truth; this table is a map. The machine-readable copy in [`data/tools.json`](./data/tools.json) is a snapshot of that same live response, so refresh it from a real `tools/list` rather than editing it by hand.
 
+> **One entry is hand-edited, on purpose.** `get_digests` in `data/tools.json` does not match what the hosted server returns. The served description still calls digests "weekly email summaries", but no digest has been written since 2026-07-06: the feed roundup email replaced them. Publishing that to the directories that scrape this file would be publishing something false, so the entry describes stored history and points at `get_feed` instead.
+>
+> This divergence is temporary. The backend fix lands in `apps/backend/src/mcp/McpPlatformTools.service.ts` (the `get_digests` description passed to `safeTool`). Once it ships, re-snapshot `data/tools.json` from a live `tools/list` and the hand edit disappears on its own. **If you regenerate before then, re-apply it, or check the served text first.**
+
 Every tool carries safety annotations (read-only / creates / updates / deletes, plus open-world hints) for clients that surface them.
 
 ## Jobs
