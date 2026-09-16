@@ -1,6 +1,6 @@
 # Remoet MCP tools
 
-Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live `tools/list` request is the source of truth; this table is a map. The machine-readable copy in [`data/tools.json`](./data/tools.json) is generated from that same live response with `npm run snapshot:tools`, so regenerate it rather than editing it by hand.
+Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live `tools/list` request is the source of truth; this table is a map. The machine-readable copy in [`data/tools.json`](./data/tools.json) is a snapshot of that same live response, so refresh it from a real `tools/list` rather than editing it by hand.
 
 Every tool carries safety annotations (read-only / creates / updates / deletes, plus open-world hints) for clients that surface them.
 
@@ -48,7 +48,7 @@ A star is a subscription to a company's postings: it puts that company's jobs in
 | Tool | Purpose |
 |------|---------|
 | `get_feed` | The user's dashboard feed as one chronological stream: job items from starred companies, the daily editorial pick, and platform posts. Poll this to act as their notification layer. |
-| `get_digests` | Weekly job-summary digests from starred companies (optional `id` for one digest's full body). |
+| `get_digests` | Stored job-summary digests from starred companies, kept for history (optional `id` for one digest's full body). No new ones are written, so a recent account has none; `get_feed` is what lands now. |
 | `get_apps` | Approved third-party apps on the platform. |
 | `get_linktrees` | The user's link tree pages (optional `slug` for one page plus view/click analytics). |
 | `create_linktree` | Create a shareable link page with view/click tracking. |
