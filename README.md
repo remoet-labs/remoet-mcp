@@ -76,7 +76,7 @@ hermes skills install remoet-labs/agent-skills/skills/remoet
 ### OpenClaw
 
 ```bash
-openclaw skills install remoet
+openclaw skills install @remoet/remoet
 ```
 
 ## First prompt to try
