@@ -1,6 +1,10 @@
 # Remoet MCP tools
 
-Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live `tools/list` request is the source of truth; this table is a map. The machine-readable copy in [`data/tools.json`](./data/tools.json) is generated from that same live response with `npm run snapshot:tools`, so regenerate it rather than editing it by hand.
+Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live `tools/list` request is the source of truth; this table is a map. The machine-readable copy in [`data/tools.json`](./data/tools.json) is a snapshot of that same live response, so refresh it from a real `tools/list` rather than editing it by hand.
+
+> **One entry is hand-edited, on purpose.** `get_digests` in `data/tools.json` does not match what the hosted server returns. The served description still calls digests "weekly email summaries", but no digest has been written since 2026-07-06: the feed roundup email replaced them. Publishing that to the directories that scrape this file would be publishing something false, so the entry describes stored history and points at `get_feed` instead.
+>
+> This divergence is temporary. The backend fix lands in `apps/backend/src/mcp/McpPlatformTools.service.ts` (the `get_digests` description passed to `safeTool`). Once it ships, re-snapshot `data/tools.json` from a live `tools/list` and the hand edit disappears on its own. **If you regenerate before then, re-apply it, or check the served text first.**
 
 Every tool carries safety annotations (read-only / creates / updates / deletes, plus open-world hints) for clients that surface them.
 
@@ -48,7 +52,7 @@ A star is a subscription to a company's postings: it puts that company's jobs in
 | Tool | Purpose |
 |------|---------|
 | `get_feed` | The user's dashboard feed as one chronological stream: job items from starred companies, the daily editorial pick, and platform posts. Poll this to act as their notification layer. |
-| `get_digests` | Weekly job-summary digests from starred companies (optional `id` for one digest's full body). |
+| `get_digests` | Stored job-summary digests from starred companies, kept for history (optional `id` for one digest's full body). No new ones are written, so a recent account has none; `get_feed` is what lands now. |
 | `get_apps` | Approved third-party apps on the platform. |
 | `get_linktrees` | The user's link tree pages (optional `slug` for one page plus view/click analytics). |
 | `create_linktree` | Create a shareable link page with view/click tracking. |
