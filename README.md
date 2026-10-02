@@ -102,7 +102,7 @@ docker build -t remoet-mcp .
 docker run --rm -i -e REMOET_API_KEY="<your-key>" remoet-mcp
 ```
 
-The published tool catalog lives in [`data/tools.json`](./data/tools.json), snapshotted from the hosted server's live `tools/list`. Refresh it from a real `tools/list` response whenever the hosted tool surface changes, and keep [`tools.md`](./tools.md) in step. Read the note at the top of `tools.md` before regenerating: one entry is hand-edited until a backend fix ships.
+The published tool catalog lives in [`data/tools.json`](./data/tools.json), snapshotted from the hosted server's live `tools/list`. Refresh it from a real `tools/list` response whenever the hosted tool surface changes, and keep [`tools.md`](./tools.md) in step. The snapshot shows the signed-in schema; read the note at the top of `tools.md` before regenerating.
 
 ## License
 

@@ -2,9 +2,9 @@
 
 Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live `tools/list` request is the source of truth; this table is a map. The machine-readable copy in [`data/tools.json`](./data/tools.json) is a snapshot of that same live response, so refresh it from a real `tools/list` rather than editing it by hand.
 
-> **One entry is hand-edited, on purpose.** `get_digests` in `data/tools.json` does not match what the hosted server returns. The served description still calls digests "weekly email summaries", but no digest has been written since 2026-07-06: the feed roundup email replaced them. Publishing that to the directories that scrape this file would be publishing something false, so the entry describes stored history and points at `get_feed` instead.
->
-> This divergence is temporary. The backend fix lands in `apps/backend/src/mcp/McpPlatformTools.service.ts` (the `get_digests` description passed to `safeTool`). Once it ships, re-snapshot `data/tools.json` from a live `tools/list` and the hand edit disappears on its own. **If you regenerate before then, re-apply it, or check the served text first.**
+`search_jobs`, `search_listings` and `get_listing` work without an account or key; the other tools need a free Remoet account.
+
+> **Regenerating:** a `tools/list` without a key returns the anonymous schema, where `search_jobs` and `search_listings` cap `pageSize` at 20 and `page` at 10. The snapshot publishes the signed-in limits, so take it with a key, or copy those two fields from the previous snapshot as the 2026-10-02 refresh did.
 
 Every tool carries safety annotations (read-only / creates / updates / deletes, plus open-world hints) for clients that surface them.
 
@@ -25,7 +25,7 @@ A star is a subscription to a company's postings: it puts that company's jobs in
 
 | Tool | Purpose |
 |------|---------|
-| `search_listings` | Search companies by `searchQuery`, `techStack[]`, `sortBy`; or list the user's starred companies with `starred: true`. Auto-normalizes tech names. |
+| `search_listings` | Search companies by `searchQuery`, `techStack[]`, `sortBy`; or list the user's starred companies with `starred: true`. Auto-normalizes tech names. Works without an account, except `starred: true`. |
 | `get_listing` | Full detail on one company by slug: description, perks, job count, URLs. The tech stack is a preview until the company is starred. |
 | `star_listing` | Star a company. Starring is free and consumes no budget; every account has the same cap on active stars. |
 | `unstar_listing` | Remove a star. This one does consume the unstar budget. |
