@@ -4,9 +4,9 @@
     "title": "View Profile",
     "description": "The user's complete Remoet profile in one call: profile core (summary, links, location, avatar), workExperience, projects, and education (each section entry carries an id for update/delete) plus the current visibility setting. The ids it returns are the ones the save_* and delete_profile_item tools take.\n\nWhat the fields affect: the summary is the first thing companies read; the technologies arrays on work entries and projects feed job matching, so an empty array drops that entry out of matching; visibility NONE hides the user from every company's candidate list, STARRED shows them to the companies they have starred, ALL to every company.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
-      "properties": {}
+      "properties": {},
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Profile",
@@ -23,7 +23,6 @@
     "title": "Update Profile",
     "description": "Update the user's Remoet profile core and/or their visibility. Only provide the fields you want to change. Omitted fields are left as-is; pass null to clear a field. If the source data (CV, website, etc.) is missing a field, ask the user rather than guessing. Never copy placeholder text like \"lorem ipsum\".\n\nVISIBILITY: pass visibility to control who can see the profile in company candidate lists: NONE (hidden), STARRED (only companies the user has starred, the recommended two-way match), or ALL (every company). Explain the trade-off before changing it.\n\nSUMMARY WRITING GUIDE: the summary is the most important field, the first thing companies read. Pattern: [Role] with [X years] experience in [core tech stack]. [One differentiator or achievement]. Example: \"Senior Full-Stack Developer with 8 years of experience in React, Node.js, and AWS. Built and scaled a SaaS platform serving 200K users.\" Under 500 characters. Avoid generic fluff like \"passionate developer\". Be specific and quantifiable.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "slug": {
@@ -181,7 +180,8 @@
             "NONE"
           ]
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Update Profile",
@@ -199,7 +199,6 @@
     "title": "Save Work Experience",
     "description": "Add or update a work experience entry (upsert). Omit id to create a new entry (title and startDate are required); pass an id (from get_profile) to update an existing one, changing only the fields you send. Every description should cover WHAT was built, HOW (technologies), IMPACT (users served, performance gains, revenue, uptime), and SCOPE (team size, scale). Push for measurable outcomes (\"Built React frontend\" -> \"...serving 50K users, 40% faster\"). The technologies array feeds job matching. Saving without an id always creates a new entry. Saved entries appear on the user's public profile, so they should describe real experience. Ask the user to confirm vague dates or fill real gaps.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "id": {
@@ -283,7 +282,8 @@
             }
           ]
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Save Work Experience",
@@ -301,7 +301,6 @@
     "title": "Save Project",
     "description": "Add or update a portfolio project (upsert). Omit id to create (title and shortDescription are required); pass an id (from get_profile) to update, changing only the fields you send. Projects are the #1 differentiator for junior/mid developers. Help the user recognize work they might not think of: side projects, open-source contributions, hackathon entries, internal tools, time-saving scripts, blogs, personal apps. Saving without an id always creates a new entry. Saved entries appear on the user's public profile, so they should describe real work.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "id": {
@@ -414,7 +413,8 @@
             }
           ]
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Save Project",
@@ -432,7 +432,6 @@
     "title": "Save Education",
     "description": "Add or update an education entry (upsert). Omit id to create (institution is required); pass an id (from get_profile) to update, changing only the fields you send. Ask about degrees, bootcamps, and notable certifications. Confirm approximate dates with the user rather than guessing; don't fabricate. Saving without an id always creates a new entry.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "id": {
@@ -530,7 +529,8 @@
             }
           ]
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Save Education",
@@ -548,7 +548,6 @@
     "title": "Delete Profile Item",
     "description": "Delete a profile item: a work experience entry, a project, or an education entry (set type accordingly). Use this to clean up duplicates, placeholder/test entries, or clearly wrong data. Ids come from get_profile. Always confirm with the user before deleting anything that could be real.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "type": {
@@ -569,7 +568,8 @@
       "required": [
         "type",
         "id"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Delete Profile Item",
@@ -587,7 +587,6 @@
     "title": "Search Companies",
     "description": "Works without a Remoet account, except starred: true. Search companies on Remoet, or list the user's starred companies (starred: true). Returns a summary per result. Full detail (description, perks, URLs) is on get_listing, by slug. Job boards and aggregators are excluded; talent networks that post direct roles (e.g. Toptal) appear as companies.\n\nCRITICAL, star quality: only star companies whose tech stack OVERLAPS the user's skills (a JavaScript dev should not star a Go/Rust-only shop). Stars are the user's job-feed noise filter, so an irrelevant star pollutes their feed with jobs they can't use. Judge overlap by each result's matchedTechStack: the technologies from your techStack filter that the company actually uses, checked against its FULL stack (not the capped preview), so do NOT skip a company just because the visible preview omits the user's skills. An empty matchedTechStack means the result matched on text, not tags. techStackCount is the company's true tag total; the full stack unlocks on starring. techStack matches AT LEAST ONE filtered technology by default; set techStackMatch:\"all\" to require every one.\n\nstarred: true limits results to the user's starred companies; combined with techStack it returns matchedTechStack per starred company, which shows any star with zero overlap.\n\nExample: search_listings({ searchQuery: \"payments\", techStack: [\"TypeScript\", \"React\"], experienceLevel: [\"mid\"] }).",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "starred": {
@@ -638,17 +637,18 @@
         },
         "page": {
           "description": "Page number, starting from 1 (default: 1)",
-          "type": "number",
+          "type": "integer",
           "minimum": 1,
           "maximum": 10000
         },
         "pageSize": {
           "description": "Results per page, max 100 (default: 20)",
-          "type": "number",
+          "type": "integer",
           "minimum": 1,
           "maximum": 100
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Search Companies",
@@ -665,7 +665,6 @@
     "title": "View Company Details",
     "description": "Works without a Remoet account. Get detailed information about a specific company listing by its slug. Use this to review a company before deciding whether to star it. Returns the company's full description, perks, job count, and URLs. NOTE: the tech stack is a small preview unless the company is starred. Starring unlocks the full stack (techStackCount shows the true total, e.g. a 3-tag preview of 147). Pass checkTechStack with the user's technologies to verify overlap against the FULL stack. Matched ones come back in matchedTechStack and lead the preview, same contract as search_listings. The star budget is reported by get_account.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "slug": {
@@ -685,7 +684,8 @@
       },
       "required": [
         "slug"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Company Details",
@@ -702,7 +702,6 @@
     "title": "Star Company",
     "description": "Star/save a company listing. Starring subscribes you to their job postings. Starred company jobs appear in get_starred_jobs. Starring also unlocks the company's FULL tech stack (unstarred listings only show a small preview). Starring is FREE. It does not consume budget. However, there is a limit on how many active stars you can have at once. Remaining star slots are reported by get_account. CRITICAL: Only star companies where the user's tech stack genuinely overlaps with the company's tech stack. A React/Node developer should NOT star a company that only uses Go or Java. Irrelevant stars pollute the job feed with noise. Every star must be a deliberate, high-quality match. A company returned by a techStack-filtered search_listings call confirms the technologies in its matchedTechStack field (the filter checks the full stack, including the part hidden from the preview), so judge overlap by matchedTechStack, not the visible preview.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "listingId": {
@@ -713,7 +712,8 @@
       },
       "required": [
         "listingId"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Star Company",
@@ -731,7 +731,6 @@
     "title": "Unstar Company",
     "description": "Remove a star from a company listing. WARNING: Unstarring consumes from your unstar budget (per 30-day period), EXCEPT when the user is over their star cap (then trimming back to the limit is free). This prevents unlimited cycling of stars. The remaining unstar budget is reported by get_account. Only unstar if the company is truly not relevant. Do NOT mass-unstar to get a user under their cap unless they explicitly ask. If they are over cap, surface the choice and let them decide which to keep.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "listingId": {
@@ -742,7 +741,8 @@
       },
       "required": [
         "listingId"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Unstar Company",
@@ -760,7 +760,6 @@
     "title": "Search Public Jobs",
     "description": "Works without a Remoet account. Search Remoet's PUBLIC job catalogue: every role on the open board at remoet.dev/jobs, across all companies, not just the ones the user has starred. No star is needed and none is consumed. Use this to answer \"what is out there\" for any technology, title or company; use get_starred_jobs instead for the user's own curated feed.\n\nEach result carries the role's public Remoet URL, which is a real page anyone can open, plus applyUrl (the employer's own posting, where an application actually happens) and companySlug (the same slug get_listing takes, for company detail). Roles that Remoet is not permitted to publish never appear here.\n\nDuplicate postings of one role at a company are collapsed into a single result, so totalCount is the number of distinct roles, not raw postings. duplicateCount is how many postings collapsed into it; boards usually duplicate a role per location, but nothing guarantees that, so do NOT report it as a number of locations. firstSeenAt is when Remoet first saw the role, not when the employer posted it, and lastVerifiedAt is the last time Remoet confirmed it was still open.\n\nFilters are searchQuery (title, Remoet summary and tech stack), techStack (ANY of the given technologies, or EVERY one under techStackMatch: \"all\", which is how you express a must-have stack), companySlug, location, remotePolicy, experienceLevel and salaryMin. A salaryMin floor drops every role Remoet holds no numeric salary for, which is roughly 45% of the board, so use it when salary is a hard requirement and leave it off otherwise. location matches the canonical places Remoet stores per role rather than the free-text location string, so a country also finds roles that name only one of its cities; searchQuery does NOT read location, so filter by place with location and not by typing the place into searchQuery.\n\nWhen a search returns nothing, the hint says which filter emptied it and how many roles dropping that one filter would return, so act on the hint rather than guessing at which filter to relax. Results are newest-first unless you ask otherwise: sortBy takes \"newest\" or \"salary\", with sortOrder asc or desc. Start broad and narrow: a single heavily filtered query misses good roles. Results can be bookmarked with save_job.\n\nExample: search_jobs({ searchQuery: \"platform engineer\", techStack: [\"Go\", \"Kubernetes\"], location: [\"Berlin\"], remotePolicy: [\"remote\"] }).",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "searchQuery": {
@@ -841,17 +840,18 @@
         },
         "page": {
           "description": "Page number, starting from 1 (default: 1)",
-          "type": "number",
+          "type": "integer",
           "minimum": 1,
           "maximum": 10000
         },
         "pageSize": {
           "description": "Results per page, max 50 (default: 20)",
-          "type": "number",
+          "type": "integer",
           "minimum": 1,
           "maximum": 50
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Search Public Jobs",
@@ -868,7 +868,6 @@
     "title": "View Job Feed",
     "description": "Get job postings from the user's starred companies. This is the user's own curated feed. If the user has no stars, this returns nothing. In that case, use search_jobs instead: it reads the public catalogue. Supports filtering by search query, location, tech stack, remote policy, experience level, and minimum salary. Results are paginated. Same-title postings from one company are grouped into a single row: postingCount and postingLocations show how many raw postings it represents and where (boards often post one role per location). Results can be bookmarked with save_job.\n\nA single filtered query can miss good roles; an unfiltered call returns the whole feed, paginated. The techStack filter uses OR logic: specifying [\"React\", \"TypeScript\", \"Node.js\"] returns jobs matching AT LEAST ONE of them (technologies are auto-normalized and matched across spelling variants), so filter by the technologies that genuinely matter and judge each job's fit from its own techStack field. Use searchQuery for role-based searches (\"senior engineer\", \"frontend\", \"platform\") and techStack for technology-based filtering.\n\nOVER-CAP WARNING: if the response includes a \"starsOverCap\" field, the user has more starred companies than the limit allows and the surplus is scheduled for PERMANENT deletion on the given date. Proactively tell the user (count + date) and let them choose which companies to unstar down to the limit. NEVER unstar companies on the user's behalf just to get under the limit unless they explicitly ask you to.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "searchQuery": {
@@ -956,7 +955,8 @@
           "minimum": 1,
           "maximum": 50
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Job Feed",
@@ -973,7 +973,6 @@
     "title": "Save Job",
     "description": "Save a job to the user's list for later. Supports both AI-extracted jobs (from search_jobs or get_starred_jobs) and internal partner jobs. This gives the agent memory across sessions. Saved jobs persist so the user doesn't lose track of interesting roles. Optionally attach a note (e.g. \"Great fit for React skills\", \"Follow up next week\"). Each job can only be saved once.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "jobId": {
@@ -1004,7 +1003,8 @@
       },
       "required": [
         "jobId"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Save Job",
@@ -1022,7 +1022,6 @@
     "title": "View Saved Jobs",
     "description": "Get the user's saved jobs list. This is the user's job search memory: shows all jobs they've bookmarked across sessions, with notes and job details. Includes both AI-extracted jobs and internal partner jobs (see jobType field). It shows the user's existing pipeline, so jobs they have already saved can be told apart from new ones. Paginated, newest saves first. Each saved job includes isActive and deactivatedAt fields. If isActive is false, the job is no longer appearing on the company's careers page. This usually means it was filled or expired, but could also be a temporary scraper issue (there is a grace period before deactivation). A saved job the user can no longer see (its company is no longer starred, or a partner role was unpublished) keeps its entry but comes back with job: null, locked: true and a lockedReason to pass on. If job is null without locked, the listing was deleted entirely. A deactivated job may still be open on the company's careers page.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "page": {
@@ -1037,7 +1036,8 @@
           "minimum": 1,
           "maximum": 50
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Saved Jobs",
@@ -1054,7 +1054,6 @@
     "title": "Update Saved Job Note",
     "description": "Update the note on a saved job. Use this to add context, track application status, or record follow-up reminders. Pass null to clear the note.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "savedJobId": {
@@ -1078,7 +1077,8 @@
       "required": [
         "savedJobId",
         "note"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Update Saved Job Note",
@@ -1096,7 +1096,6 @@
     "title": "Remove Saved Job",
     "description": "Remove a job from the user's saved list. Saved job ids come from get_saved_jobs. Confirm with the user before removing.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "savedJobId": {
@@ -1107,7 +1106,8 @@
       },
       "required": [
         "savedJobId"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Remove Saved Job",
@@ -1125,7 +1125,6 @@
     "title": "View Feed",
     "description": "The user's dashboard feed as ONE composed stream, chronological newest first. Each entry has a kind: 'item' (per-company job items from their starred companies - the company, when it landed, role snapshots with job id/title/application URL/salary/remote policy/experience level/tech stack, and per-role flags isActive, savedJobId, matchesFilters, plus per-item isStarred: false means the user unstarred that company since), 'job_of_the_day' (one daily editorial pick from anywhere on the platform - a discovery candidate worth surfacing), 'blog' and 'broadcast' (platform content; usually skim). Pass nextCursor back to page deeper; omit it for the newest page.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "pageSize": {
@@ -1139,7 +1138,8 @@
           "type": "string",
           "maxLength": 64
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Feed",
@@ -1156,7 +1156,6 @@
     "title": "View Digests",
     "description": "HISTORICAL ONLY: the user's archived job digests, the email summaries Remoet used to send about new jobs from their starred companies. No new digest has been generated since 2026-07-06, when the feed roundup replaced that pipeline, so this returns nothing at all for an account created since then. What carries new roles now is get_feed (the composed dashboard stream, and what the roundup emails are built from); for searching, use get_starred_jobs or search_jobs. Reach for this tool only when the user asks about their old email summaries by name. Without an id: the 20 most recent as lightweight summaries (id, title, frequency, jobCount, createdAt). With an id: that digest's full markdown body (each job's title, application URL, salary, remote policy, experience level, tech stack).",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "id": {
@@ -1164,7 +1163,8 @@
           "type": "string",
           "pattern": "^[0-9a-fA-F]{24}$"
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Digests",
@@ -1181,7 +1181,6 @@
     "title": "Browse Apps",
     "description": "List approved apps built on the Remoet platform. These are community and official apps that extend Remoet's functionality. Each app has a repo URL for deployment and a demo URL to try it out. Use this to help users discover tools that complement their Remoet workflow, e.g. portfolio sites, CV generators, job trackers, etc. You can filter by category or tag.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "category": {
@@ -1204,7 +1203,8 @@
           "minimum": 1,
           "maximum": 50
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Browse Apps",
@@ -1221,14 +1221,14 @@
     "title": "View Link Trees",
     "description": "The user's link tree pages: shareable single-page URLs for a CV, email signature, or job application, with per-link view/click tracking so recruiter engagement is measurable. Without a slug: all of the user's link trees (each with its id and slug). With a slug: that page's content plus its engagement data (views, clicks per link), which answers \"has anyone looked at my link tree?\".",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "slug": {
           "description": "Fetch one link tree in full by its public slug (with engagement data). Omit to list all of the user's link trees.",
           "type": "string"
         }
-      }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Link Trees",
@@ -1245,7 +1245,6 @@
     "title": "Create Link Tree",
     "description": "Create a link tree page: a shareable page with the user's links (social media, portfolio, GitHub, etc.). Each account can create up to 10. The slug becomes the public URL. Slug rules: 5-20 characters, lowercase letters, numbers, and hyphens only, cannot start/end with a hyphen. Must be unique. Use the user's name or handle as a base for the slug. The usual links are the ones on the user's profile (githubUrl, linkedinUrl, twitterUrl, url), which get_profile returns.\n\nRemoet tracks views and link clicks on each link tree, so a link tree URL on a CV or application shows whether a recruiter opened it.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "slug": {
@@ -1300,7 +1299,8 @@
         "title",
         "description",
         "links"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Create Link Tree",
@@ -1318,7 +1318,6 @@
     "title": "Delete Link Tree",
     "description": "Delete a link tree page. Link tree ids come from get_linktrees. Confirm with the user before deleting.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "id": {
@@ -1329,7 +1328,8 @@
       },
       "required": [
         "id"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Delete Link Tree",
@@ -1347,7 +1347,6 @@
     "title": "Apply to Job",
     "description": "Apply to a job on behalf of the user, or get its application link. Two outcomes by job type: internal jobs (posted directly through Remoet's partner system) are applied to end-to-end and return the created application; scraped jobs (most of the platform) return applicationType \"external\" with the applicationUrl where the user applies on the company's site. Share that link with the user; Remoet cannot submit external applications for them.\n\nApplying to an internal job submits a real application in the user's name, so it needs the user's explicit consent.\n\nInternal jobs must be published and not expired, and the user can only apply once per job: duplicate applications are rejected.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
       "properties": {
         "jobId": {
@@ -1358,7 +1357,8 @@
       },
       "required": [
         "jobId"
-      ]
+      ],
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "Apply to Job",
@@ -1376,9 +1376,9 @@
     "title": "View Account",
     "description": "The user's account status in one call: every budget the platform enforces (active stars vs cap, unstars used vs the 30-day unstar budget, MCP requests today vs daily cap, REST API requests today vs daily cap, each with a resetsAt), the remaining limits (link-tree cap), and any over-cap/grace state.\n\nCalling it is free and never counts against a cap. Every limit is a plain number.\n\nRemoet is free. There is nothing to upgrade to and nothing to sell: if the user is at a limit, help them work within it.",
     "inputSchema": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
-      "properties": {}
+      "properties": {},
+      "$schema": "http://json-schema.org/draft-07/schema#"
     },
     "annotations": {
       "title": "View Account",

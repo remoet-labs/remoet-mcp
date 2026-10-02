@@ -32,7 +32,7 @@ Two transports, same tools:
 - `https://api.remoet.dev/mcp` expects an API key as a Bearer header (`Authorization: Bearer <key>`). Best for CLI and always-on agents.
 - `https://api.remoet.dev/mcp/oauth` runs OAuth 2.1 with PKCE and dynamic client registration. Best for browser clients like Claude Web and Desktop custom connectors.
 
-Generate a key at [remoet.dev/onboarding](https://remoet.dev/onboarding). The same key works for MCP and the REST API.
+With no key at all, both answer `search_jobs`, `search_listings` and `get_listing`, so you can search before signing up. Generate a key at [remoet.dev/onboarding](https://remoet.dev/onboarding) for the rest. The same key works for MCP and the REST API.
 
 ## Quick install
 

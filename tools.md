@@ -4,7 +4,7 @@ Tools exposed by the Remoet MCP server at `https://api.remoet.dev/mcp`. The live
 
 `search_jobs`, `search_listings` and `get_listing` work without an account or key; the other tools need a free Remoet account.
 
-> **Regenerating:** a `tools/list` without a key returns the anonymous schema, where `search_jobs` and `search_listings` cap `pageSize` at 20 and `page` at 10. The snapshot publishes the signed-in limits, so take it with a key, or copy those two fields from the previous snapshot as the 2026-10-02 refresh did.
+> **Regenerating:** take the snapshot from a signed-in `tools/list`, with a key in the `Authorization` header. Without one the server returns the anonymous schema, where `search_jobs` and `search_listings` cap `pageSize` at 20 and `page` at 10, which is not what this file publishes.
 
 Every tool carries safety annotations (read-only / creates / updates / deletes, plus open-world hints) for clients that surface them.
 
