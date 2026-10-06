@@ -1,44 +1,47 @@
 # Remoet MCP server
 
-Connect your AI agent to [Remoet](https://remoet.dev), the job platform built for agents. Search the public job catalogue, find tech companies by the stack they actually build on, star the ones you'd work for so their new jobs land in your feed, and manage your developer profile, all through conversation.
+Track tech jobs from companies you love, by asking your AI agent. No account needed to start.
 
-This repo ships a **local stdio MCP server** (Node + TypeScript) plus the metadata MCP clients and directory registries need. The local server advertises Remoet's full tool catalog, snapshotted from the live server. Executing a tool through it does not work yet (see [Run locally](#run-locally-not-working-yet)); the hosted MCP at `https://api.remoet.dev/mcp` is closed source and remains the source of truth for execution.
+```bash
+claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp
+```
 
-Connect to the hosted server directly (see [Quick install](#quick-install) below). That is the path that works today.
+**What it will and will not do**
 
-- **Homepage:** https://remoet.dev
-- **Docs:** https://docs.remoet.dev
-- **MCP endpoint:** `https://api.remoet.dev/mcp`
-- **Get a free API key:** https://remoet.dev/onboarding
+- It searches the public job board and, with a free account, keeps your starred companies and saved jobs on file.
+- Every write is a tool call your agent makes. The server does not enforce consent: write tools carry annotations your client can use to ask you first, and `apply_to_job` tells the agent to get your consent before submitting. For scraped roles (most of the board) it only returns the employer's link, and you apply there.
+- Your profile (name, photo, summary, location, links) and the work, project and education entries you save are public: the profile page shows the profile, work and projects, and education is returned by the public profile API. `visibility` (`NONE`, `STARRED` or `ALL`) separately controls which companies can see you as a candidate.
 
-## What it does
+**Try this first:**
 
-The job catalogue is public. `search_jobs` reads every role on the open board at [remoet.dev/jobs](https://remoet.dev/jobs), across all companies, before you star anything.
+> I work in Rails, React, and Postgres. Find open roles that use that stack and tell me which companies are hiring for it.
 
-A star is about delivery, not access. Remoet derives each company's tech stack from the roles it is hiring for right now, not from self-reported adoption lists that go stale, so an agent can match you to companies by the technologies they actually build on today. Star the ones that fit and their new jobs land in your feed, with the company's full stack unlocked. Remoet also keeps your profile and the jobs you save on file, and `get_feed` is the one stream your agent polls for what landed since: new roles from your starred companies, the daily pick, platform posts. A roundup of the same feed goes out by email on the schedule you set.
+**The board, counted 2026-10-06:** 11,704 open tech roles at 762 hiring companies, counting a role posted in many cities once. Free for job seekers, no paid plans, and a fixed cap on active stars that `get_account` reports.
 
-Remoet is free for job seekers. There are no paid plans and no credit card. One set of limits applies to every account, and `get_account` reports where you stand against them.
+## No key vs. free account
 
-See [`tools.md`](./tools.md) for the full tool catalog.
+The hosted server at `https://api.remoet.dev/mcp` answers the read-only catalogue tools with no key at all:
 
-## Works with
+- `search_jobs`: every role on the open board at [remoet.dev/jobs](https://remoet.dev/jobs), across all companies.
+- `search_listings`: companies by name or by the tech stack they hire for.
+- `get_listing`: one company in detail.
 
-Claude Code, Claude Desktop, Claude Web, Cursor, VS Code, Windsurf, Codex, and any MCP-compatible client. Also installable as an [agentskills.io](https://agentskills.io) skill on OpenClaw (via ClawHub) and Hermes Agent. See [Quick install](#quick-install).
-
-## Auth
-
-Two transports, same tools:
-
-- `https://api.remoet.dev/mcp` accepts an API key as a Bearer header (`Authorization: Bearer <key>`). Best for CLI and always-on agents.
-- `https://api.remoet.dev/mcp/oauth` runs OAuth 2.1 with PKCE and dynamic client registration. Best for browser clients like Claude Web and Desktop custom connectors.
-
-With no key at all, both answer `search_jobs`, `search_listings` and `get_listing`, so you can search before signing up. Generate a key at [remoet.dev/onboarding](https://remoet.dev/onboarding) for the rest. The same key works for MCP and the REST API.
+Everything personal (profile, stars, saved jobs, your feed, applications) needs a free account. Get an API key at [remoet.dev/onboarding](https://remoet.dev/onboarding), or sign in with OAuth from a browser client. The same key works for MCP and the REST API. See [`tools.md`](./tools.md) for the full tool catalog.
 
 ## Quick install
 
 ### Claude Code
 
+Keyless, for searching:
+
 ```bash
+claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp
+```
+
+With a key, for the personal tools. If you already added the keyless server, remove it first, or the add fails with "already exists" and you stay keyless:
+
+```bash
+claude mcp remove remoet --scope user
 claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp --header "Authorization: Bearer YOUR_KEY"
 ```
 
@@ -46,7 +49,7 @@ Then restart Claude Code (exit and relaunch) so the new server's tools load in a
 
 ### Cursor, VS Code, Windsurf
 
-Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as a template):
+Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as a template). Drop the `headers` block to search without a key; to upgrade later, add it back and reload the client:
 
 ```json
 {
@@ -64,7 +67,7 @@ Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as
 
 Add a custom connector pointing at `https://api.remoet.dev/mcp/oauth` and complete the browser sign-in. No API key to paste.
 
-Remoet also ships as an [agentskills.io](https://agentskills.io) skill, with one-command installs on Hermes and OpenClaw.
+Remoet also ships as an [agentskills.io](https://agentskills.io) skill, with short installs on Hermes and OpenClaw.
 
 ### Hermes
 
@@ -79,13 +82,35 @@ hermes skills install remoet-labs/agent-skills/skills/remoet
 openclaw skills install @remoet/remoet
 ```
 
-## First prompt to try
+## What it does
 
-> I work in Rails, React, and Postgres. Which companies on Remoet hire for that stack?
+Remoet derives each company's tech stack from the roles it is hiring for right now, not from self-reported adoption lists that go stale, so an agent can match you to companies by the technologies they actually build on today. Star the ones that fit and their new jobs land in your feed, with the company's full stack unlocked. `get_feed` is the one stream your agent polls for what landed since: new roles from your starred companies, the daily pick, platform posts. A roundup of the same feed goes out by email on the schedule you set.
+
+One set of limits applies to every account, and `get_account` reports where you stand against them.
+
+## Works with
+
+Claude Code, Claude Desktop, Claude Web, Cursor, VS Code, Windsurf, Codex, and any MCP-compatible client. Also installable as an [agentskills.io](https://agentskills.io) skill on OpenClaw (via ClawHub) and Hermes Agent.
+
+## Auth
+
+Two endpoints, same tools, different auth:
+
+- `https://api.remoet.dev/mcp` accepts an API key as a Bearer header (`Authorization: Bearer <key>`), or none for the catalogue tools. Best for CLI and always-on agents.
+- `https://api.remoet.dev/mcp/oauth` runs OAuth 2.1 with PKCE and dynamic client registration. Best for browser clients like Claude Web and Desktop custom connectors.
+
+## Links
+
+- **Homepage:** https://remoet.dev
+- **Docs:** https://docs.remoet.dev
+- **MCP endpoint:** `https://api.remoet.dev/mcp`
+- **Get a free API key:** https://remoet.dev/onboarding
 
 ## Run locally (not working yet)
 
-The local stdio server builds and runs, and it answers `tools/list` from the snapshot, which is what directory build and scan systems need. **It cannot execute a tool call.** The proxy demands an `mcp-session-id` header on the hosted server's initialize response, and the hosted server has been stateless since June 2026, so it never sends one and every call fails at that check. Use the hosted endpoints in [Quick install](#quick-install) instead. Fixing the proxy is a separate piece of work.
+This repo ships a local stdio MCP server (Node + TypeScript) plus the metadata MCP clients and directory registries need. The hosted MCP at `https://api.remoet.dev/mcp` is closed source and remains the source of truth for execution; use it as shown in [Quick install](#quick-install).
+
+The local stdio server builds and runs, and it answers `tools/list` from the snapshot, which is what directory build and scan systems need. **It cannot execute a tool call.** The proxy demands an `mcp-session-id` header on the hosted server's initialize response, and the hosted server has been stateless since June 2026, so it never sends one and every call fails at that check. Fixing the proxy is a separate piece of work.
 
 For the catalog-only use:
 
