@@ -9,14 +9,14 @@ claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp
 **What it will and will not do**
 
 - It searches the public job board and, with a free account, keeps your profile, starred companies and saved jobs on file.
-- It does not apply on employer sites for you: for scraped roles (most of the board) it hands you the employer's link and you apply there.
-- It writes only when you ask your agent to, and the one tool that can submit an application (partner jobs posted through Remoet) needs your explicit go-ahead.
+- Every write is a tool call your agent makes. The server does not enforce consent: write tools carry annotations your client can use to ask you first, and `apply_to_job` tells the agent to get your consent before submitting. For scraped roles (most of the board) it only returns the employer's link, and you apply there.
+- Work and project entries you save appear on your public profile, and `visibility` (`NONE`, `STARRED` or `ALL`) controls which companies can see you as a candidate.
 
 **Try this first:**
 
 > I work in Rails, React, and Postgres. Find open roles that use that stack and tell me which companies are hiring for it.
 
-**The board, counted 2026-10-06:** 11,704 open tech roles at 762 hiring companies, counting a role posted in many cities once. Free for job seekers, no paid plans, up to 50 active stars per account. MIT licensed.
+**The board, counted 2026-10-06:** 11,704 open tech roles at 762 hiring companies, counting a role posted in many cities once. Free for job seekers, no paid plans, and a fixed cap on active stars that `get_account` reports.
 
 ## No key vs. free account
 
@@ -38,9 +38,10 @@ Keyless, for searching:
 claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp
 ```
 
-With a key, for the personal tools:
+With a key, for the personal tools. If you already added the keyless server, remove it first, or the add fails with "already exists" and you stay keyless:
 
 ```bash
+claude mcp remove remoet --scope user
 claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp --header "Authorization: Bearer YOUR_KEY"
 ```
 
@@ -48,7 +49,7 @@ Then restart Claude Code (exit and relaunch) so the new server's tools load in a
 
 ### Cursor, VS Code, Windsurf
 
-Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as a template). Drop the `headers` block to search without a key:
+Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as a template). Drop the `headers` block to search without a key; to upgrade later, add it back and reload the client:
 
 ```json
 {
@@ -93,7 +94,7 @@ Claude Code, Claude Desktop, Claude Web, Cursor, VS Code, Windsurf, Codex, and a
 
 ## Auth
 
-Two transports, same tools:
+Two endpoints, same tools, different auth:
 
 - `https://api.remoet.dev/mcp` accepts an API key as a Bearer header (`Authorization: Bearer <key>`), or none for the catalogue tools. Best for CLI and always-on agents.
 - `https://api.remoet.dev/mcp/oauth` runs OAuth 2.1 with PKCE and dynamic client registration. Best for browser clients like Claude Web and Desktop custom connectors.
