@@ -10,7 +10,7 @@ claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp
 
 - It searches the public job board and, with a free account, keeps your starred companies and saved jobs on file.
 - Every write is a tool call your agent makes. The server does not enforce consent: write tools carry annotations your client can use to ask you first, and `apply_to_job` tells the agent to get your consent before submitting. For scraped roles (most of the board) it only returns the employer's link, and you apply there.
-- Your profile (name, summary, location, links) and the work and project entries you save appear on your public profile page, and `visibility` (`NONE`, `STARRED` or `ALL`) controls which companies can see you as a candidate.
+- Your profile (name, photo, summary, location, links) and the work, project and education entries you save are public: the profile page shows the profile, work and projects, and education is returned by the public profile API. `visibility` (`NONE`, `STARRED` or `ALL`) separately controls which companies can see you as a candidate.
 
 **Try this first:**
 
@@ -67,7 +67,7 @@ Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as
 
 Add a custom connector pointing at `https://api.remoet.dev/mcp/oauth` and complete the browser sign-in. No API key to paste.
 
-Remoet also ships as an [agentskills.io](https://agentskills.io) skill, with one-command installs on Hermes and OpenClaw.
+Remoet also ships as an [agentskills.io](https://agentskills.io) skill, with short installs on Hermes and OpenClaw.
 
 ### Hermes
 
