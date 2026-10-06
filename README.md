@@ -8,9 +8,9 @@ claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp
 
 **What it will and will not do**
 
-- It searches the public job board and, with a free account, keeps your profile, starred companies and saved jobs on file.
+- It searches the public job board and, with a free account, keeps your starred companies and saved jobs on file.
 - Every write is a tool call your agent makes. The server does not enforce consent: write tools carry annotations your client can use to ask you first, and `apply_to_job` tells the agent to get your consent before submitting. For scraped roles (most of the board) it only returns the employer's link, and you apply there.
-- Work and project entries you save appear on your public profile, and `visibility` (`NONE`, `STARRED` or `ALL`) controls which companies can see you as a candidate.
+- Your profile (name, summary, location, links) and the work and project entries you save appear on your public profile page, and `visibility` (`NONE`, `STARRED` or `ALL`) controls which companies can see you as a candidate.
 
 **Try this first:**
 
