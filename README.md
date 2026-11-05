@@ -47,9 +47,11 @@ claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp -
 
 Then restart Claude Code (exit and relaunch) so the new server's tools load in a fresh session.
 
+Remoet is also a Claude Code plugin, in [`plugin/`](./plugin). It connects to the OAuth endpoint, so there is no key to paste.
+
 ### Cursor, VS Code, Windsurf
 
-Add to your client's MCP config (the JSON in [`.mcp.json`](./.mcp.json) works as a template). Drop the `headers` block to search without a key; to upgrade later, add it back and reload the client:
+Add to your client's MCP config. Drop the `headers` block to search without a key; to upgrade later, add it back and reload the client:
 
 ```json
 {
