@@ -7,5 +7,7 @@
     "url": "https://remoet.dev"
   },
   "homepage": "https://remoet.dev",
-  "privacyPolicyUrl": "https://www.remoet.dev/legal/privacy-policy"
+  "privacyPolicyUrl": "https://www.remoet.dev/legal/privacy-policy",
+  "license": "MIT",
+  "repository": "https://github.com/remoet-labs/remoet-mcp"
 }

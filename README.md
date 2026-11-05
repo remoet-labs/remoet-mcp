@@ -47,7 +47,7 @@ claude mcp add --transport http --scope user remoet https://api.remoet.dev/mcp -
 
 Then restart Claude Code (exit and relaunch) so the new server's tools load in a fresh session.
 
-As a plugin, Remoet installs from the Claude Code plugin directory. The plugin is one remote MCP server, `https://api.remoet.dev/mcp/oauth`, and nothing else: no hooks, no scripts, no local code. The catalogue tools answer without signing in. For the personal tools, run `/mcp`, pick `remoet` and sign in through your browser (OAuth 2.1), so there is no key to paste. Your requests and the profile data you save go to Remoet's servers only. [Privacy policy](https://www.remoet.dev/legal/privacy-policy).
+Remoet is also a Claude Code plugin, in [`plugin/`](./plugin). It connects to the OAuth endpoint, so there is no key to paste.
 
 ### Cursor, VS Code, Windsurf
 
