@@ -1,8 +1,7 @@
 .git
 .gitignore
 .github
-.claude-plugin
-.mcp.json
+plugin
 server.json
 glama.json
 README.md
