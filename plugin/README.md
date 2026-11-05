@@ -8,9 +8,9 @@ Track tech jobs from companies you love, by asking Claude. Search the public boa
 
 ## Signing in
 
-The catalogue tools (`search_jobs`, `search_listings`, `get_listing`) work without an account. For the personal tools (profile, stars, saved jobs, your feed, applications), run `/mcp`, pick `remoet` and sign in through your browser (OAuth 2.1). There is no key to paste, and the account is free.
-
 If you added Remoet earlier with `claude mcp add`, remove that server (`claude mcp remove remoet --scope user`) so its tools don't show up twice.
+
+The catalogue tools (`search_jobs`, `search_listings`, `get_listing`) work without an account. For the personal tools (profile, stars, saved jobs, your feed, applications), run `/mcp`, pick `plugin:remoet:remoet` and sign in through your browser (OAuth 2.1). There is no key to paste, and the account is free.
 
 ## What it connects to
 
